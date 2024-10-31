@@ -1,4 +1,3 @@
-
 import torch
 from torch import nn
 from typing import Tuple
@@ -72,8 +71,16 @@ class MultiHeadSelfAttention(nn.Module):
 
     if mask is not None:
       # print(f"Dot product shape: {dot_product.shape}")
-      # print(f"Mask dimension: {mask.shape}")
-      dot_product += (mask * -1e9)
+      # print(f"Mask dimension: {mask.shape}")'
+      while len(mask.shape) < 4:
+        mask = mask.unsqueeze(1)
+
+      mask = mask.repeat(1, self.num_heads, 1, 1)
+
+      if mask.shape != dot_product.shape:
+        mask = mask[:, :, :, :dot_product.shape[-1]]
+
+      dot_product = dot_product.masked_fill(mask == 0, 1e-9)
 
     attn_weights = torch.softmax(dot_product, dim=-1)
     attn_output = torch.matmul(attn_weights, value)
