@@ -17,11 +17,11 @@ class EncoderLayer(nn.Module):
 
     def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout=0.1) -> None:
         super().__init__()
-        self.mha = MultiHeadSelfAttention(d_model, num_heads)
-        self.layernorm1 = nn.LayerNorm(d_model)
+        self.mha = MultiHeadSelfAttention(d_model, num_heads) # Multi-head attention
+        self.layernorm1 = nn.LayerNorm(d_model) # Layer normalization
         self.dropout1 = nn.Dropout(p=dropout)
-        self.ffn = FeedForwardNetwork(d_model, d_ff, dropout)
-        self.layernorm2 = nn.LayerNorm(d_model)
+        self.ffn = FeedForwardNetwork(d_model, d_ff, dropout) # Feed forward network
+        self.layernorm2 = nn.LayerNorm(d_model) # Layer normlization
         self.dropout2 = nn.Dropout(p=dropout)
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
@@ -33,8 +33,7 @@ class EncoderLayer(nn.Module):
         Returns:
             x (torch.Tensor): Output tensor of shape (batch_size, max_len, d_model)."""
 
-        # Self-attention (use the same input tensor)
-        attn_output, _ = self.mha(x, key=x, value=x, mask=mask)
+        attn_output, _ = self.mha(x, key=x, value=x, mask=mask) # Self attention
         x = self.layernorm1(x + self.dropout1(attn_output))  # Add and norm
         ffn_output = self.ffn(x)  # Feed forward network
         x = self.layernorm2(x + self.dropout2(ffn_output))  # Add and norm
@@ -64,13 +63,15 @@ class Encoder(nn.Module):
 
         Args:
             x (torch.Tensor): Input tensor of shape (d_model, max_len).
-            mask (torch.Tensor, optional): Optional mask for input tensor.
+            mask (torch.Tensor, optional): Optional mask for input tensor (default None).
 
         Returns:
             x (torch.Tensor): Output tensor of shape (batch_size, d_model, max_len)."""
 
-        x = self.position_encoding(x * math.sqrt(self.d_model))
-        x = self.dropout(x)
+        x = self.position_encoding(x * math.sqrt(self.d_model)) # Position encoding
+        x = self.dropout(x) 
+
+        # Pass through each Encoder layer
         for layer in self.layers:
             x = layer(x, mask)
 

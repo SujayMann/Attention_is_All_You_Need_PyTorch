@@ -28,5 +28,5 @@ class FeedForwardNetwork(nn.Module):
         Returns:
             x (torch.Tensor): Output tensor of shape (batch_size, max_len, d_model)."""
 
-        x = self.ffn_block(x) + x
+        x = self.ffn_block(x) + x # Feed forward network + residual input
         return x

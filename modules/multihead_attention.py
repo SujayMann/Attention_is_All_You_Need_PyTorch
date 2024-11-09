@@ -16,9 +16,11 @@ class MultiHeadSelfAttention(nn.Module):
         self.num_heads = num_heads
         self.d_model = d_model
         self.d_k = d_model // num_heads
+
         self.W_q = nn.Linear(in_features=d_model, out_features=d_model)
         self.W_k = nn.Linear(in_features=d_model, out_features=d_model)
         self.W_v = nn.Linear(in_features=d_model, out_features=d_model)
+
         self.W_o = nn.Linear(in_features=d_model, out_features=d_model)
 
     def scaled_dot_product_attention(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor = None) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -53,7 +55,9 @@ class MultiHeadSelfAttention(nn.Module):
         """Forward pass for Multi-head Attention.
 
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, max-len, d_model).
+            query (torch.Tensor): Input tensor of shape (batch_size, max_len, d_model).
+            key (torch.Tensor, optional): Key tensor (defaults to query).
+            value (torch.Tensor, optional): Value tensor (defaults to query).
             mask (torch.Tensor, optional): Mask of input tensor (default None).
 
         Returns:
@@ -72,7 +76,10 @@ class MultiHeadSelfAttention(nn.Module):
         K = self.W_k(key).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
         V = self.W_v(value).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
 
+        # Scaled dot product attention
         attn_output, attn_weights = self.scaled_dot_product_attention(Q, K, V, mask)
+
+        # Multihead outputs
         attn_output = attn_output.transpose(1, 2).contiguous().view(batch_size, -1, self.num_heads * self.d_k)
         output = self.W_o(attn_output)
         return output, attn_weights

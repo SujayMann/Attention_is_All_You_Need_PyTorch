@@ -8,15 +8,19 @@ class PositionEncoding(torch.nn.Module):
 
     Args:
         d_model (int): Embedding dimension.
-        max_len (int): Maximum length of input sequences (default 128)."""
+        max_len (int): Maximum length of input sequences (default 128).
+        device (str): 'cpu' or 'cuda'"""
 
     def __init__(self, d_model: int, max_len: int = 128, device=device) -> None:
         super().__init__()
         pe = torch.zeros(max_len, d_model).to(device)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1).to(device)
+
         div_term = 10000 ** (torch.arange(0, d_model, 2).float() / d_model).to(device)
+
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
+        
         pe = pe.unsqueeze(0)  # Add batch dimension
         self.register_buffer('pe', pe)
 
