@@ -3,6 +3,14 @@ from torch import nn
 
 # Custom Dataset class for tokenization
 class TranslationDataset(Dataset):
+    """Custom dataset for tokenized data.
+    
+    Args:
+        dataset: Examples containing translations.
+        tokenizer (transformer.PreTrainedTokenizer): Tokenizer instance for tokenizing input and output sequences.
+        max_length (int): Maximum length for sequences (default 128).
+        d_model (int): Dimension of model (default 512)."""
+    
     def __init__(self, dataset, tokenizer, max_length: int=128, d_model: int=512) -> None:
         self.dataset = dataset
         self.tokenizer = tokenizer

@@ -7,15 +7,17 @@ from typing import Tuple
 
 tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-de-en")
 
-
 # Function to generate a square subsequent mask for the decoder
 def generate_square_subsequent_mask(sz) -> torch.Tensor:
+    
+    """Generates look-ahead mask for decoder."""
     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
     mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
     return mask
 
 def create_mask(src, tgt, pad_idx) -> Tuple[torch.Tensor, torch.Tensor]:
-    src_seq_len = src.shape[1]
+
+    """Create source and target masks."""
     tgt_seq_len = tgt.shape[1]
     # Encoder mask (padding mask)
     src_mask = (src != pad_idx).unsqueeze(1).unsqueeze(2)  # (batch_size, 1, 1, src_seq_len)
@@ -29,6 +31,8 @@ def create_mask(src, tgt, pad_idx) -> Tuple[torch.Tensor, torch.Tensor]:
     return src_mask, seq_mask  # Return the correct masks
 
 def calculate_bleu_score(references, candidate):
+    """Calculate BLEU score for translations."""
+
     references = [ref.split() for ref in references]
     candidate = candidate.split()
     bleu = sentence_bleu(references, candidate)
@@ -36,17 +40,20 @@ def calculate_bleu_score(references, candidate):
 
 # Training function
 def train(model, train_dataloader, optimizer, criterion, scheduler, device, epoch, max_grad_norm=1.0) -> float:
+    """Train model for a single epoch."""
+
     model.train()
     total_loss = 0
     for batch_idx, batch in enumerate(tqdm(train_dataloader, desc=f"Training Epoch {epoch+1}", leave=False)):
         src = batch['input_ids'].to(device)
         tgt = batch['labels'].to(device)
-        # Create masks using the new function
+
+        # Create masks
         src_mask, tgt_mask = create_mask(src, tgt[:, :-1], tokenizer.pad_token_id)
         tgt_input = tgt[:, :-1]
         tgt_labels = tgt[:, 1:]
 
-        # Forward pass: Get the model output
+        # Forward pass
         output = model(src, tgt_input, src_mask,tgt_mask)  # Pass the new masks
 
         # Calculate the loss
@@ -54,20 +61,23 @@ def train(model, train_dataloader, optimizer, criterion, scheduler, device, epoc
 
         optimizer.zero_grad()
 
-        # Backward pass: Compute gradients
+        # Backpropagation
         loss.backward()
 
-        # Gradient clipping (optional but recommended for preventing exploding gradients)
+        # Gradient clipping
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
 
-        # Update model parameters using the optimizer
+        # Update weights
         optimizer.step()
 
+        # Update scheduler
         scheduler.step(epoch=None)
 
         # Accumulate the loss for monitoring
         total_loss += loss.item()
-        if batch_idx % 200 == 0:  # Print every 200 batches
+
+        # Print every 200 batches
+        if batch_idx % 200 == 0:
             print(f"Batch {batch_idx}, Loss: {loss.item():.4f}")
 
     # Compute average loss for the epoch
@@ -77,12 +87,14 @@ def train(model, train_dataloader, optimizer, criterion, scheduler, device, epoc
 
 # Evaluation function
 def evaluate(model, val_dataloader, criterion, device, tokenizer) -> Tuple[float, float]:
-    model.eval()  # Set model to evaluation mode
+    """Evaluate model on validation data."""
+
+    model.eval()
     total_loss = 0
     all_references = []
     all_candidates = []
 
-    with torch.inference_mode():  # No gradients needed for evaluation
+    with torch.inference_mode():
         for batch_idx, batch in enumerate(tqdm(val_dataloader, desc="Evaluating", leave=False)):
             src = batch['input_ids'].to(device)
             tgt = batch['labels'].to(device)
@@ -92,8 +104,8 @@ def evaluate(model, val_dataloader, criterion, device, tokenizer) -> Tuple[float
 
             # Forward pass
             output = model(src, tgt_input, src_mask[:, None, None, :], src_mask[:, None, None, :])
-            # Calculate the loss
 
+            # Calculate the loss
             loss = criterion(output.view(-1, output.size(-1)), tgt_labels.contiguous().view(-1))
             total_loss += loss.item()
 
@@ -114,8 +126,10 @@ def evaluate(model, val_dataloader, criterion, device, tokenizer) -> Tuple[float
     print(f"BLEU score: {bleu_score:.4f}")
     return avg_loss, bleu_score
 
-# Plotting the training and validation loss
+# Plotting
 def plot_loss_graphs(train_losses, val_losses, bleu_scores) -> None:
+    """Plot loss and BLEU score curves."""
+
     epochs = range(1, len(train_losses) + 1)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     ax1.plot(epochs, train_losses, label='Training Loss')
