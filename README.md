@@ -3,7 +3,7 @@ Implementation of the research paper **'Attention is All You Need'** in **PyTorc
 
 This project implements the Transformer model for machine translation between English and German using the WMT 2014 dataset. The architecture follows the 'Attention is All You Need' paper and is implemented in PyTorch.
 
-For training, Kaggle environment with 1 P100 GPU was used.
+Originally developed in Google Colab, leveraging Colab AI whenever possible, then shifted to Kaggle for training.
 
 **Training time:** Approx. 10 hours
 
