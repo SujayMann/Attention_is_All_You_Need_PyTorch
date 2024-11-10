@@ -44,7 +44,6 @@ val_losses = []
 bleu_scores = []
 
 # Training loop
-best_val_loss = float('inf')
 for epoch in range(num_epochs):
     # Training
     train_loss = train(model, train_dataloader, optimizer, criterion, scheduler, device, epoch, max_grad_norm)
@@ -55,10 +54,8 @@ for epoch in range(num_epochs):
     val_losses.append(val_loss)
     bleu_scores.append(bleu_score)
 
-    # Save the best model (based on validation loss)
-    if val_loss < best_val_loss:
-        best_val_loss = val_loss
-        torch.save(model.state_dict(), f"best_transformer_model_epoch_{epoch+1}.pt")
+# Save the model
+torch.save(model.state_dict(), "transformer_model.pth")
 
 # Plot loss curves and BLEU score
 plot_loss_graphs(train_losses, val_losses, bleu_scores)
