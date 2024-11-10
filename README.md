@@ -3,6 +3,10 @@ Implementation of the research paper **'Attention is All You Need'** in **PyTorc
 
 This project implements the Transformer model for machine translation between English and German using the WMT 2014 dataset. The architecture follows the 'Attention is All You Need' paper and is implemented in PyTorch.
 
+For training, Kaggle environment with 1 P100 GPU was used.
+
+Training time: Approx. 10 hours
+
 # Overview
 The transformer model is a deep learning architecture for sequence-to-sequence modelling tasks and relies solely on the attention mechanism.
 
@@ -96,12 +100,22 @@ After the final layer of the Decoder, a linear output layer projects a vector wh
 
 Softmax function is applied get the probabilities and the word with highest probability is selected.
 
-## Others
-A custom class `TranslationDataset` is used to tokenize the dataset using `MarianTokenizer`.
+## Data Preprocessing
+A custom class `TranslationDataset` is used to tokenize the dataset using `MarianTokenizer` from Hugging face `transformers` library. The tokenization includes padding, truncation, and converting text into numerical tokens.
 
+The `TranslationDataset` class handles the tokenization process, and it ensures that both the source and target sequences are appropriately preprocessed for the model.
+
+## Learning Rate Scheduler
 A custom class `CustomScheduler` is used for learning rate scheduling based on the implementation in the research paper. The difference being `warmup_steps=2000` instead of 4000.
 
-Utility functions for creating masks, training, evaluating, calculating BLEU-score and plotting loss curves are used.
+## Utility Functions
+
+Some utility functions used for:
+- **Creating masks**: For attention mechanisms.
+- **Training**: Functions to train the model over multiple epochs.
+- **Evaluation**: Functions to evaluate the model on the validation set.
+- **BLEU score calculation**: Using the `nltk.translate` library to calculate BLEU score on the translated outputs.
+- **Plotting loss curves**: Visualize the training and validation loss over epochs.
 
 # Dataset
 
@@ -129,6 +143,7 @@ Due to hardware limitations, I have only used 1% of the data which is roughly 45
 * feed forward dimension: 2048
 * num_layers: 6 (for encoder and decoder)
 * dropout: 0.1
+* max_len: 128
 
 # Key differences
 
