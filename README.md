@@ -157,7 +157,7 @@ Due to hardware limitations, I have only used 1% of the data which is roughly 45
 | Tokenization | Byte Pair Encoding | Marian Tokenizer |
 | Warmup steps | 4000 | 2000 |
 | max_len | 10000 | 128 |
-| Bleu score | - | - |
+| Bleu score | 27.3 | 0.34 |
 
 ## File Overview
 * `modules`: Contains various layers used in the Transformer (MultiHeadAttention, Encoder, Decoder...).
