@@ -183,4 +183,11 @@ python main.py
 ```
 **Note:** Use a machine with a GPU and sufficient RAM.
 
+## Save the model
+You can save the model as follows:
+```python
+torch.save(model.state_dict(), "transformer_model.pth")
+```
+Although `main.py` already saves the model after training.
+
 Feel free to change the hyperparameters and the dataset size.
