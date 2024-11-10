@@ -18,6 +18,7 @@ Components of architecture:
 * Decoder
 * Transformer
 
+# Components
 ## Positional Encoding
 Positional Encodings are added to the input embeddings to retain the positional information of each word in the sequence.
 
