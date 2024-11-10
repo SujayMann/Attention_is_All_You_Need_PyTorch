@@ -5,7 +5,7 @@ This project implements the Transformer model for machine translation between En
 
 For training, Kaggle environment with 1 P100 GPU was used.
 
-Training time: Approx. 10 hours
+**Training time:** Approx. 10 hours
 
 # Overview
 The transformer model is a deep learning architecture for sequence-to-sequence modelling tasks and relies solely on the attention mechanism.
@@ -166,6 +166,11 @@ Due to hardware limitations, I have only used 1% of the data which is roughly 45
 * `utils.py`: Contains various utility functions for training, evaluating, plotting.
 
 # Run the project
+
+* Run the notebook `research-paper-implementation-project.ipynb`.
+
+OR
+
 * Install dependencies mentioned in `requirements.txt`
 ```cmd
 pip install -r requirements.txt
