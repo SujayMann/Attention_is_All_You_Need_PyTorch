@@ -9,14 +9,12 @@ tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-de-en")
 
 # Function to generate a square subsequent mask for the decoder
 def generate_square_subsequent_mask(sz) -> torch.Tensor:
-    
     """Generates look-ahead mask for decoder."""
     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
     mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
     return mask
 
 def create_mask(src, tgt, pad_idx) -> Tuple[torch.Tensor, torch.Tensor]:
-
     """Create source and target masks."""
     tgt_seq_len = tgt.shape[1]
     # Encoder mask (padding mask)
@@ -32,7 +30,6 @@ def create_mask(src, tgt, pad_idx) -> Tuple[torch.Tensor, torch.Tensor]:
 
 def calculate_bleu_score(references, candidate):
     """Calculate BLEU score for translations."""
-
     references = [ref.split() for ref in references]
     candidate = candidate.split()
     bleu = sentence_bleu(references, candidate)
@@ -41,7 +38,6 @@ def calculate_bleu_score(references, candidate):
 # Training function
 def train(model, train_dataloader, optimizer, criterion, scheduler, device, epoch, max_grad_norm=1.0) -> float:
     """Train model for a single epoch."""
-
     model.train()
     total_loss = 0
     for batch_idx, batch in enumerate(tqdm(train_dataloader, desc=f"Training Epoch {epoch+1}", leave=False)):
@@ -88,7 +84,6 @@ def train(model, train_dataloader, optimizer, criterion, scheduler, device, epoc
 # Evaluation function
 def evaluate(model, val_dataloader, criterion, device, tokenizer) -> Tuple[float, float]:
     """Evaluate model on validation data."""
-
     model.eval()
     total_loss = 0
     all_references = []
@@ -129,7 +124,6 @@ def evaluate(model, val_dataloader, criterion, device, tokenizer) -> Tuple[float
 # Plotting
 def plot_loss_graphs(train_losses, val_losses, bleu_scores) -> None:
     """Plot loss and BLEU score curves."""
-
     epochs = range(1, len(train_losses) + 1)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     ax1.plot(epochs, train_losses, label='Training Loss')
