@@ -7,7 +7,7 @@ Originally developed in Google Colab, leveraging Colab AI whenever possible, the
 
 **Training time:** Approx. 10 hours
 
-# Overview
+## Overview
 The transformer model is a deep learning architecture for sequence-to-sequence modelling tasks and relies solely on the attention mechanism.
 
 Components of architecture:
@@ -18,8 +18,8 @@ Components of architecture:
 * Decoder
 * Transformer
 
-# Components
-## Positional Encoding
+## Components
+### Positional Encoding
 Positional Encodings are added to the input embeddings to retain the positional information of each word in the sequence.
 
 Formula for positional encoding in the paper:
@@ -37,7 +37,7 @@ where:
 * `i` is the dimension of current embedding.
 * `d_model` is embedding dimension (512).
 
-## Scaled Dot Product Attention
+### Scaled Dot Product Attention
 Attention mechanism works by computing a set of attention weights based on query, key and value vectors.
 
 Formula: 
@@ -50,7 +50,7 @@ where:
 * Q, K and V represent query, key and value matrices.
 * d_k is dimension of key vectors used to scale the dot product to avoid large values.
 
-## Multi Head Attention
+### Multi Head Attention
 The model used multiple attention heads to capture different types of relationships in the sequence. The outputs are concatenated and passed to a final linear layer.
 
 Formula:
@@ -63,7 +63,7 @@ $$
 where \\ head_i = Attention(QW^Q_i, KW^K_i, VW^V_i)
 $$
 
-## Feed Forward Network
+### Feed Forward Network
 Each Feed Forward Network layer contains a Linear layer followed by a ReLU activation followed by another Linear layer.
 
 The FFN helps the model learn complex transformations and representations for each word in the sequence.
@@ -76,7 +76,7 @@ $$
 
 The dimensionality of input and output is $`d_{model} = 512`$, hidden layer has dimensionality $`d_{ff} = 2048`$
 
-## Layer Normalization and Residual Connection
+### Layer Normalization and Residual Connection
 Each sub-layer (self-attention and feedforward network) has a residual connection around it, followed by layer normalization. This helps in improving convergence by allowing gradients to flow more easily through the network.
 
 Formula:
@@ -85,31 +85,31 @@ $$
 Output = LayerNorm(x + Sublayer(x))
 $$
 
-## Encoder
+### Encoder
 The encoder is responsible for processing the input sequence and generating a sequence of hidden states that the decoder will use for producing the output. It consists of a stack of 6 Encoder Layers which each contain: 
 * `MultiHeadAttention` block followed by LayerNorm
 * `FeedForwardNetwork` block followed by LayerNorm
 
-## Decoder
+### Decoder
 The decoder generates the output sequence based on the encoded representations of the input sequence. Like the encoder, the decoder consists of a stack of 6 identical layers. Each Decoder Layer contains:
 * `Masked MultiHeadAttention` block followed by LayerNorm
 * `MultiheadAttention` block followed by LayerNorm
 * `FeedForwardNetwork` block followed by LayerNorm
 
-## Linear Output Layer and Softmax
+### Linear Output Layer and Softmax
 After the final layer of the Decoder, a linear output layer projects a vector which contains likelihood of each word in the vocabulary.
 
 Softmax function is applied get the probabilities and the word with highest probability is selected.
 
-## Data Preprocessing
+### Data Preprocessing
 A custom class `TranslationDataset` is used to tokenize the dataset using `MarianTokenizer` from Hugging face `transformers` library. The tokenization includes padding, truncation, and converting text into numerical tokens.
 
 The `TranslationDataset` class handles the tokenization process, and it ensures that both the source and target sequences are appropriately preprocessed for the model.
 
-## Learning Rate Scheduler
+### Learning Rate Scheduler
 A custom class `CustomScheduler` is used for learning rate scheduling based on the implementation in the research paper. The difference being `warmup_steps=2000` instead of 4000.
 
-## Utility Functions
+### Utility Functions
 
 Some utility functions used for:
 - **Creating masks**: For attention mechanisms.
@@ -118,7 +118,7 @@ Some utility functions used for:
 - **BLEU score calculation**: Using the `nltk.translate` library to calculate BLEU score on the translated outputs.
 - **Plotting loss curves**: Visualize the training and validation loss over epochs.
 
-# Dataset
+## Dataset
 
 Dataset used is the [WMT 2014 English-German Dataset.](https://huggingface.co/datasets/wmt/wmt14/viewer/de-en)
 
@@ -133,7 +133,7 @@ val_dataset = dataset['validation']
 
 Due to hardware limitations, I have only used 1% of the data which is roughly 45000 rows instead of 4.5 Million rows.
 
-# Hyperparameters
+## Hyperparameters
 * batch_size: 32
 * learning_rate: 1e-3
 * num_epochs: 10 (due to hardware limitations)
@@ -146,7 +146,7 @@ Due to hardware limitations, I have only used 1% of the data which is roughly 45
 * dropout: 0.1
 * max_len: 128
 
-# Key differences
+## Key differences
 
 | Feature | Original paper | My implementation |
 | --- | --- | --- |
@@ -159,18 +159,18 @@ Due to hardware limitations, I have only used 1% of the data which is roughly 45
 | max_len | 10000 | 128 |
 | Bleu score | - | - |
 
-# File Overview
+## File Overview
 * `modules`: Contains various layers used in the Transformer (MultiHeadAttention, Encoder, Decoder...).
 * `main.py`: Script for loading data, preprocessing, training and evaluating the model.
 * `scheduler.py`: Script for custom learning rate scheduler.
 * `tokenizer.py`: Script for tokenizing the data.
 * `utils.py`: Contains various utility functions for training, evaluating, plotting.
 
-# Run the project
+## Run the project
 
 * Run the notebook `research-paper-implementation-project.ipynb`.
 
-OR
+**OR**
 
 * Install dependencies mentioned in `requirements.txt`
 ```cmd
