@@ -18,8 +18,8 @@ class PositionEncoding(torch.nn.Module):
 
         div_term = 10000 ** (torch.arange(0, d_model, 2).float() / d_model).to(device)
 
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
+        pe[:, 0::2] = torch.sin(position / div_term)
+        pe[:, 1::2] = torch.cos(position / div_term)
         
         pe = pe.unsqueeze(0)  # Add batch dimension
         self.register_buffer('pe', pe)
